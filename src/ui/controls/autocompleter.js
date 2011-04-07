@@ -35,6 +35,10 @@
       if (opt.choices) {
         this.choices = opt.choices.clone();
       }
+      
+      if (opt.remoteUrl) {
+        this.remoteUrl = opt.remoteUrl;
+      }
 
       this.menu = new UI.Menu();
       this.element.insert(this.menu.element);
@@ -150,24 +154,40 @@
      *  come from the server, this is an asynchronous operation.
     **/
     findChoices: function() {
-      var value = this._getInput(),
-          choices = this.choices || [],
-          opt = this.options;
+      console.log('findChoices');
+      if(this.remoteUrl){
+        this.fetchChoices(this._getInput());
+      } else {
+        var value = this._getInput(),
+            choices = this.choices || [],
+            opt = this.options;
 
-      var results = choices.inject([], function(memo, choice) {
-        if (opt.choiceValue(choice).toLowerCase().include(
-         value.toLowerCase())) {
-          memo.push(choice);
-        }
-        return memo;
-      });
+        var results = choices.inject([], function(memo, choice) {
+          if (opt.choiceValue(choice).toLowerCase().include(
+           value.toLowerCase())) {
+            memo.push(choice);
+          }
+          return memo;
+        });
 
-      this.setChoices(results);
+        this.setChoices(results); 
+      }
     },
 
     setChoices: function(results) {
+      console.log('setChoices');
+      console.log(results);
       this.results = results;
       this._updateMenu(results);
+    },
+    
+    fetchChoices: function(input) {
+      var self = this;
+      new Ajax.Request(this.remoteUrl+input, {
+        onSuccess: function(response){
+          self.setChoices(response.responseJSON);
+        }
+      })
     },
 
     _updateMenu: function(results) {
