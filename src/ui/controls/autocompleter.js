@@ -154,7 +154,6 @@
      *  come from the server, this is an asynchronous operation.
     **/
     findChoices: function() {
-      console.log('findChoices');
       if(this.remoteUrl){
         this.fetchChoices(this._getInput());
       } else {
@@ -175,8 +174,6 @@
     },
 
     setChoices: function(results) {
-      console.log('setChoices');
-      console.log(results);
       this.results = results;
       this._updateMenu(results);
     },
